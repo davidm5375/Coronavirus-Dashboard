@@ -1,5 +1,6 @@
 const fs = require("fs");
 const globals = require("./globals");
+const allCountriesByContinent = require("./data/countries-by-continent.json");
 
 exports.getJSONPath = region => {
   return `./tmp/statistics_${region}.json`;
@@ -26,17 +27,23 @@ exports.addAllNumbers = numbers => {
   return numbers.reduce((a, b) => a + b).toLocaleString();
 };
 
-exports.calculatePercentage = (total, amount, shouldRound = false, shouldMinusTotal = true) => {
-  let newTotal = parseInt(amount.replace(",", ""))
+exports.calculatePercentage = (
+  total,
+  amount,
+  shouldRound = false,
+  shouldMinusTotal = true
+) => {
+  let newTotal = parseInt(amount.replace(",", ""));
 
-  if(shouldMinusTotal) {
-    newTotal = parseInt(amount.replace(",", "")) - parseInt(total.replace(",", ""))
+  if (shouldMinusTotal) {
+    newTotal =
+      parseInt(amount.replace(",", "")) - parseInt(total.replace(",", ""));
   }
   let rate = (parseInt(total.replace(",", "")) / newTotal) * 100;
-  if(isNaN(rate) || !isFinite(rate)) return "0"
+  if (isNaN(rate) || !isFinite(rate)) return "0";
   rate = rate.toString();
 
-  if(rate.indexOf(".") !== -1) {
+  if (rate.indexOf(".") !== -1) {
     rate = rate.slice(0, rate.indexOf(".") + 3);
   }
   return shouldRound ? Math.ceil(rate) : rate;
@@ -66,6 +73,19 @@ exports.writeJSONFile = (region, data) => {
   }
 };
 
+exports.getAllContinentLists = () => {
+  const allCountries = this.renameCountryLabels(allCountriesByContinent);
+  let allContinents = {};
+
+  allCountries.map(country => {
+    if (!allContinents[country.continent])
+      allContinents[country.continent] = [];
+    allContinents[country.continent].push(country.country);
+  });
+
+  return allContinents;
+};
+
 exports.remapKeys = (country, keyMapping) => {
   let remappedCountry = { ...globals.countryStructure };
   Object.keys(keyMapping).map(key => {
@@ -77,7 +97,7 @@ exports.remapKeys = (country, keyMapping) => {
 
 exports.convertAllKeysToString = object => {
   Object.keys(object).map(key => {
-    if(object[key] === null) object[key] = "0"
+    if (object[key] === null) object[key] = "0";
     object[key] = isNaN(object[key])
       ? object[key]
       : object[key].toLocaleString();
@@ -85,11 +105,11 @@ exports.convertAllKeysToString = object => {
   return object;
 };
 
-exports.pullCountriesFromRegion = (regions, countryList)=> {
+exports.pullCountriesFromRegion = (regions, countryList) => {
   return regions.filter(country => {
-    return countryList.includes(country.country)
-  })
-}
+    return countryList.includes(country.country);
+  });
+};
 
 exports.calculateRegionTotal = regions => {
   let regionTotalTemplate = { ...globals.countryStructure };
@@ -129,13 +149,13 @@ exports.getGreaterValue = (value1, value2) => {
   return value1 >= value2 ? value1.toLocaleString() : value2.toLocaleString();
 };
 
-exports.syncTwoRegions = (regions1, regions2, region="", overrides=[]) => {
+exports.syncTwoRegions = (regions1, regions2, region = "", overrides = []) => {
   regions1.map((country1, country1Index) => {
     const skipRegion = overrides.filter(override => {
       return override.region === region && override.skip === country1.country;
-    })
+    });
 
-    if(skipRegion.length) return;
+    if (skipRegion.length) return;
 
     regions2.map((country2, country2Index) => {
       if (country1.country !== country2.country) return;
@@ -168,6 +188,11 @@ exports.syncTwoRegions = (regions1, regions2, region="", overrides=[]) => {
   return regions1, regions2;
 };
 
+exports.slugify = (region)=> {
+  region = region.split(" ").join("-")
+  return region.toLowerCase()
+}
+
 exports.renameCountryLabels = regions => {
   regions.map((country, index) => {
     if (!!globals.AlternativeLabelNames[country.country]) {
@@ -175,4 +200,25 @@ exports.renameCountryLabels = regions => {
     }
   });
   return regions;
+};
+
+exports.generateRegionFromList = (
+  region,
+  allCountries,
+  allCountriesInContinent
+) => {
+  let regionData = { ...globals.regionStructure };
+  regionData.regionName = region;
+  regionData.regions = this.pullCountriesFromRegion(
+    allCountries,
+    allCountriesInContinent
+  );
+
+  regionData.regions,
+    (allCountries = this.syncTwoRegions(
+      allCountries,
+      regionData.regions
+    ));
+
+  return regionData;
 };

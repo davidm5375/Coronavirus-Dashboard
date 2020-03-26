@@ -1,12 +1,20 @@
 exports.allRegions = [
   {
+    name: "Asia",
+    sheetName: "Asia",
+    slug: 'asia',
+    scraper: "coronatracker"
+  },
+  {
     name: "Africa",
     sheetName: "Africa",
+    slug: 'africa',
     scraper: "coronatracker"
   },
   {
     name: "World",
     sheetName: "Global",
+    slug: 'global',
     startKey: "WORLD",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -14,6 +22,7 @@ exports.allRegions = [
   {
     name: "USA",
     sheetName: "USA",
+    slug: "usa",
     startKey: "UNITED STATES",
     totalKey: "U.S. TOTAL",
     scraper: "bno"
@@ -21,6 +30,7 @@ exports.allRegions = [
   {
     name: "China",
     sheetName: "China",
+    slug: "china",
     startKey: "MAINLAND CHINA",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -28,6 +38,7 @@ exports.allRegions = [
   {
     name: "Canada",
     sheetName: "Canada",
+    slug: "canada",
     startKey: "CANADA",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -35,6 +46,7 @@ exports.allRegions = [
   {
     name: "Australia",
     sheetName: "Australia",
+    slug: "australia",
     startKey: "AUSTRALIA",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -42,6 +54,7 @@ exports.allRegions = [
   {
     name: "Latin America",
     sheetName: "LatinAmerica",
+    slug: "latinamerica",
     startKey: "Mundo Hispano",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -49,6 +62,22 @@ exports.allRegions = [
   {
     name: "Europe",
     sheetName: "Europe",
+    slug: "europe",
+    scraper: "coronatracker"
+  },
+  {
+    name: "South America",
+    slug: "south-america",
+    scraper: "coronatracker"
+  },
+  {
+    name: "North America",
+    slug: "north-america",
+    scraper: "coronatracker"
+  },
+  {
+    name: "Oceania",
+    slug: "oceania",
     scraper: "coronatracker"
   }
 ];
@@ -57,11 +86,15 @@ exports.displayOrder = [
   "Global",
   "USA",
   "Europe",
+  "Asia",
   "Africa",
   "LatinAmerica",
   "China",
   "Canada",
-  "Australia"
+  "Australia",
+  "Oceania",
+  "North America",
+  "South America"
 ];
 
 exports.countryLists = {
@@ -179,7 +212,6 @@ exports.regionStructure = {
     deaths: "",
     recovered: "",
     serious: "",
-    critical: "",
     todayCases: "",
     todayDeaths: ""
   }
@@ -191,7 +223,6 @@ exports.countryStructure = {
   deaths: "",
   recovered: "",
   serious: "",
-  critical: "",
   todayCases: "",
   todayDeaths: ""
 };
