@@ -6,13 +6,70 @@ const utilities = require("../utilities");
 const fs = require("fs");
 
 const keyOrders = {
-  "USA": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
-  "Global": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
-  "China": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
-  "Canada": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
-  "Australia": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
-  "LatinAmerica": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "]
-}
+  USA: [
+    "index ",
+    "country ",
+    "cases ",
+    "new_cases ",
+    "deaths ",
+    "new_deaths ",
+    "death_rate ",
+    "serious ",
+    "recovered "
+  ],
+  Global: [
+    "index ",
+    "country ",
+    "cases ",
+    "new_cases ",
+    "deaths ",
+    "new_deaths ",
+    "death_rate ",
+    "serious ",
+    "recovered "
+  ],
+  China: [
+    "index ",
+    "country ",
+    "cases ",
+    "deaths ",
+    "serious ",
+    "critical ",
+    "recovered ",
+    "mystery "
+  ],
+  Canada: [
+    "index ",
+    "country ",
+    "cases ",
+    "deaths ",
+    "serious ",
+    "critical ",
+    "recovered ",
+    "mystery "
+  ],
+  Australia: [
+    "index ",
+    "country ",
+    "cases ",
+    "new_cases ",
+    "deaths ",
+    "new_deaths ",
+    "death_rate ",
+    "serious ",
+    "recovered "
+  ],
+  LatinAmerica: [
+    "index ",
+    "country ",
+    "cases ",
+    "deaths ",
+    "serious ",
+    "critical ",
+    "recovered ",
+    "mystery "
+  ]
+};
 
 const keyMapping = {
   country: "country ",
@@ -32,18 +89,21 @@ exports.fetchData = region => {
     url: utilities.getExternalCSV(region.sheetName),
     responseType: "text"
   }).then(response => {
-    return csv().fromString(response.data).then(json => {
-      return generatedRegionalData(
-        json,
-        region.startKey,
-        region.totalKey,
-        region.sheetName
-      )
-    }).catch(error=> {
-      console.error(error);
-    });
+    return csv()
+      .fromString(response.data)
+      .then(json => {
+        return generatedRegionalData(
+          json,
+          region.startKey,
+          region.totalKey,
+          region.sheetName
+        );
+      })
+      .catch(error => {
+        console.error(error);
+      });
   });
-}
+};
 
 const removeEmptyRows = data => {
   return data.filter(row => !!row["country "]);
@@ -62,12 +122,11 @@ const gatherBetweenRows = (startKey, endKey, data) => {
 };
 
 const hasValidKeys = (region, sheetName) => {
-  const receivedKeys = Object.keys(region)
-  return keyOrders[sheetName].every((key, index)=> {
-    return receivedKeys[index] === keyOrders[sheetName][index]
-  })
-
-}
+  const receivedKeys = Object.keys(region);
+  return keyOrders[sheetName].every((key, index) => {
+    return receivedKeys[index] === keyOrders[sheetName][index];
+  });
+};
 
 const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
   const sanitiziedData = removeEmptyRows(data);
@@ -79,20 +138,23 @@ const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
       return element["country "] === totalKey;
     })
   };
-  if(!hasValidKeys(sortedData.regions[0], sheetName)) return false;
+  if (!hasValidKeys(sortedData.regions[0], sheetName)) return false;
   sortedData.regionName = sheetName;
   sortedData.lastUpdated = time.setUpdatedTime();
-  sortedData.regionTotal = utilities.remapKeys(sortedData.regionTotal, keyMapping)
+  sortedData.regionTotal = utilities.remapKeys(
+    sortedData.regionTotal,
+    keyMapping
+  );
   sortedData.regions = sortedData.regions.map(region => {
-    return utilities.remapKeys(region, keyMapping)
-  })
-  sortedData.regions = utilities.renameCountryLabels(sortedData.regions)
+    return utilities.remapKeys(region, keyMapping);
+  });
+  sortedData.regions = utilities.renameCountryLabels(sortedData.regions);
   sortedData.regions.map(region => {
     region.serious = region.serious === "N/A" ? "0" : region.serious;
   });
 
-  if(sheetName === "Global") {
-    sortedData = extractCountryFromRegion("Queue", "Global", sortedData)
+  if (sheetName === "Global") {
+    sortedData = extractCountryFromRegion("Queue", "Global", sortedData);
   }
 
   return sortedData;
@@ -107,8 +169,6 @@ const extractCountryFromRegion = (country, region, data) => {
 
   const targetCountry = data.regions[targetCountryIndex];
   data.regions.splice(targetCountryIndex, 1);
-
-
 
   return data;
 };
