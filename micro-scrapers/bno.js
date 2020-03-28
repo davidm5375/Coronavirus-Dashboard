@@ -10,7 +10,7 @@ const keyOrders = {
   "Global": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
   "China": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
   "Canada": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
-  "Australia": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
+  "Australia": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
   "LatinAmerica": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "]
 }
 
@@ -26,6 +26,7 @@ const keyMapping = {
 };
 
 exports.fetchData = region => {
+  console.log(`[SYNC] Fetching ${region.sheetName}`);
   return axios({
     method: "get",
     url: utilities.getExternalCSV(region.sheetName),
