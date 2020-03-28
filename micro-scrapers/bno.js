@@ -5,6 +5,15 @@ const time = require("../getTime");
 const utilities = require("../utilities");
 const fs = require("fs");
 
+const keyOrders = {
+  "USA": ["ind!ex ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
+  "Global": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
+  "China": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
+  "Canada": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
+  "Australia": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
+  "LatinAmerica": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "]
+}
+
 const keyMapping = {
   country: "country ",
   cases: "cases ",
@@ -51,6 +60,14 @@ const gatherBetweenRows = (startKey, endKey, data) => {
   return data.slice(startKey + 1, endKey);
 };
 
+const hasValidKeys = (region, sheetName) => {
+  const receivedKeys = Object.keys(region)
+  return keyOrders[sheetName].every((key, index)=> {
+    return receivedKeys[index] === keyOrders[sheetName][index]
+  })
+
+}
+
 const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
   const sanitiziedData = removeEmptyRows(data);
   const rowOrder = [startKey, totalKey];
@@ -61,6 +78,7 @@ const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
       return element["country "] === totalKey;
     })
   };
+  if(!hasValidKeys(sortedData.regions[0], sheetName)) return false;
   sortedData.regionName = sheetName;
   sortedData.lastUpdated = time.setUpdatedTime();
   sortedData.regionTotal = utilities.remapKeys(sortedData.regionTotal, keyMapping)
