@@ -6,7 +6,7 @@ const utilities = require("../utilities");
 const fs = require("fs");
 
 const keyOrders = {
-  "USA": ["ind!ex ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
+  "USA": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
   "Global": ["index ",	"country ",	"cases ",	"new_cases ",	"deaths ",	"new_deaths ",	"death_rate ",	"serious ",	"recovered "],
   "China": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
   "Canada": ["index ",	"country ",	"cases ",	"deaths ",	"serious ",	"critical ",	"recovered ",	"mystery "],
