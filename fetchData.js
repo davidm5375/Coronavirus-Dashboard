@@ -81,6 +81,8 @@ exports.fetchAllData = async () => {
         //
         //   });
         // });
+    }).catch(error=> {
+      console.error(error);
     });
 };
 
