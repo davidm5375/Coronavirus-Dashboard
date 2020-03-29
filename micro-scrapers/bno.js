@@ -78,7 +78,6 @@ const keyMapping = {
   deaths: "deaths ",
   recovered: "recovered ",
   serious: "serious ",
-  critical: "critical ",
   new_cases: "todayCases",
   new_deaths: "todayDeaths"
 };
@@ -101,7 +100,7 @@ exports.fetchData = region => {
         );
       })
       .catch(error => {
-        console.error(error);
+        return error
       });
   });
 };

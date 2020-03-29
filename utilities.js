@@ -149,7 +149,6 @@ exports.syncTwoRegions = (regions1, regions2, region="", overrides=[]) => {
         deaths: this.getGreaterValue(country1.deaths, country2.deaths),
         serious: this.getGreaterValue(country1.serious, country2.serious),
         recovered: this.getGreaterValue(country1.recovered, country2.recovered),
-        critical: this.getGreaterValue(country1.critical, country2.critical),
         todayCases: this.getGreaterValue(
           country1.todayCases,
           country2.todayCases
@@ -159,6 +158,11 @@ exports.syncTwoRegions = (regions1, regions2, region="", overrides=[]) => {
           country2.todayDeaths
         )
       };
+
+      if(country1.countryInfo) syncRegionData.countryCode = country1.countryInfo.iso2
+      if(country2.countryInfo) syncRegionData.countryCode = country2.countryInfo.iso2
+      if(country1.countryCode) syncRegionData.countryCode = country1.countryCode
+      if(country2.countryCode) syncRegionData.countryCode = country2.countryCode
 
       regions1[country1Index] = syncRegionData;
       regions2[country2Index] = syncRegionData;
