@@ -66,21 +66,29 @@ exports.fetchAllData = async () => {
               allData["Africa"].regions
             ));
 
-            gatherAllOverrides(allData);
+            syncWithAllCountryList(allData).then(allSyncedData => {
+              allSyncedData["Global"].regions.map((region, index) => {
+                if (region.country === "United States") {
+
+                  allSyncedData["USA"].regionTotal.recoveryRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.recovered, allSyncedData["USA"].regionTotal.cases, true, false)
+                  allSyncedData["USA"].regionTotal.todayDeathRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.todayDeaths, allSyncedData["USA"].regionTotal.deaths, false, true)
+                  allSyncedData["USA"].regionTotal.todayCaseRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.todayCases, allSyncedData["USA"].regionTotal.cases, false, true)
+
+                  allSyncedData["Global"].regions[index] = allSyncedData["USA"].regionTotal;
+                  allSyncedData["Global"].regions[index].country = "United States";
+                  allSyncedData["Global"].regions[index].countryCode = "US";
+                }
+              });
+
+              // TODO: Sync other Regions with Global data.
+
+              Object.keys(allSyncedData).map(region => {
+                console.log(`[SYNC] Successful: ${region} - Saved.`);
+                utilities.writeJSONFile(region, allSyncedData[region]);
+              });
+            });
+
         })
-        // .then(() => {
-        //   // Sync USA data and CNN data.
-        //   cnnScraper.fetchData().then(cnnData => {
-        //     cnnData,
-        //       (allData["USA"].regions = utilities.syncTwoRegions(
-        //         cnnData,
-        //         allData["USA"].regions
-        //       ));
-        //
-        //     // Sync with Overrides and write final finals.
-        //
-        //   });
-        // });
     }).catch(error=> {
       console.error(error);
     });
@@ -128,49 +136,5 @@ const syncWithAllCountryList = allData => {
       allData["Global"].regionTotal.cases = tempGlobalTotal
     });
     return allData;
-  });
-};
-
-const gatherAllOverrides = allData => {
-  return Promise.all(
-    Object.keys(allData).map(region =>
-      fs.promises.readFile(`${utilities.getOverridesJSONPath(region)}`)
-    )
-  ).then(values => {
-    let data = {};
-
-    values.forEach(region => {
-      const regionData = JSON.parse(region);
-      data[regionData.regionName] = regionData;
-    });
-
-    Object.keys(data).map(region => {
-      data[region].regions,
-        (allData[region].regions = utilities.syncTwoRegions(
-          data[region].regions,
-          allData[region].regions
-        ));
-    });
-
-    syncWithAllCountryList(allData).then(allSyncedData => {
-      allSyncedData["Global"].regions.map((region, index) => {
-        if (region.country === "United States") {
-
-          allSyncedData["USA"].regionTotal.recoveryRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.recovered, allSyncedData["USA"].regionTotal.cases, true, false)
-          allSyncedData["USA"].regionTotal.todayDeathRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.todayDeaths, allSyncedData["USA"].regionTotal.deaths, false, true)
-          allSyncedData["USA"].regionTotal.todayCaseRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.todayCases, allSyncedData["USA"].regionTotal.cases, false, true)
-
-          allSyncedData["Global"].regions[index] = allSyncedData["USA"].regionTotal;
-          allSyncedData["Global"].regions[index].country = "United States";
-        }
-      });
-
-      // TODO: Sync other Regions with Global data.
-
-      Object.keys(data).map(region => {
-        console.log(`[SYNC] Successful: ${region} - Saved.`);
-        utilities.writeJSONFile(region, allSyncedData[region]);
-      });
-    });
   });
 };

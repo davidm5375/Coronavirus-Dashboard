@@ -187,8 +187,7 @@ exports.AlternativeLabelNames = {
   "The Gambia": "Gambia",
   "Saint Kitts and Nevis": "St. Kitts and Nevis",
   "Libyan Arab Jamahiriya": "Libya",
-  
-
+  "USA": "United States"
 };
 
 exports.regionStructure = {
@@ -200,7 +199,6 @@ exports.regionStructure = {
     deaths: "",
     recovered: "",
     serious: "",
-    critical: "",
     todayCases: "",
     todayDeaths: ""
   }
@@ -212,7 +210,6 @@ exports.countryStructure = {
   deaths: "",
   recovered: "",
   serious: "",
-  critical: "",
   todayCases: "",
   todayDeaths: ""
 };
