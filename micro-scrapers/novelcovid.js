@@ -9,7 +9,8 @@ const keyMapping = {
   deaths: "deaths",
   recovered_old: "recovered",
   todayCases: "todayCases",
-  todayDeaths: "todayDeaths"
+  todayDeaths: "todayDeaths",
+  countryInfo: "countryInfo"
 };
 const stateKeyMapping = {
   country: "state",

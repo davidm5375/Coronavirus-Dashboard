@@ -202,7 +202,8 @@ exports.AlternativeLabelNames = {
   "Rep. Dominicana": "Dominican Republic",
   Kyrgyzstan: "Kyrgyz Republic",
   UK: "United Kingdom",
-  "S. Korea": "South Korea"
+  "S. Korea": "South Korea",
+  "USA": "United States"
 };
 
 exports.regionStructure = {

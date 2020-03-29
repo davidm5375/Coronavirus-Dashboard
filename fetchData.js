@@ -119,7 +119,8 @@ const calculatePercentages = regions => {
   return regions;
 };
 
-//TODO: Sync USA total with North America
+//TODO: Sync USA total with North America and Global
+//TODO: Check if other regions/continents have this issue.
 const syncWithAllCountryList = allData => {
   return novelcovid.fetchData().then(novelData => {
     Object.keys(allData).map(region => {
