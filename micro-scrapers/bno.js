@@ -42,11 +42,12 @@ const keyOrders = {
     "index ",
     "country ",
     "cases ",
+    "new_cases ",
     "deaths ",
+    "new_deaths ",
+    "death_rate ",
     "serious ",
-    "critical ",
-    "recovered ",
-    "mystery "
+    "recovered "
   ],
   Australia: [
     "index ",
@@ -65,8 +66,8 @@ const keyOrders = {
     "cases ",
     "deaths ",
     "serious ",
-    "critical ",
     "recovered ",
+    "critical ",
     "mystery "
   ]
 };
