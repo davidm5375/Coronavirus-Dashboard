@@ -215,4 +215,4 @@ exports.countryStructure = {
 };
 
 exports.CSV_URL =
-  "https://docs.google.com/spreadsheets/d/14dnT6yUxZiHWvPaEiWsOKu1xPQ_xwkuuUDfMGmFHinc/gviz/tq?tqx=out:csv&sheet=";
+  "https://docs.google.com/spreadsheets/d/1KZeg-BWiP0PPhVBw33BTA-KiCSSXIaG6cdnRqD27XYc/gviz/tq?tqx=out:csv&sheet=";
