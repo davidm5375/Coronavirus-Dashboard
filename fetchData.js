@@ -32,20 +32,21 @@ exports.fetchAllData = async () => {
       }
 
       Object.keys(allContinentLists).map(region => {
-        if (["Global", "USA"].includes(region)) return;
+        const slug = utilities.slugify(region)
+        if (["global", "usa"].includes(slug)) return;
         const generatedRegion = utilities.generateRegionFromList(
-          region,
-          allData["Global"].regions,
+          slug,
+          allData["global"].regions,
           allContinentLists[region]
         );
-        if (generatedRegion.regions.length) allData[region] = generatedRegion;
+        if (generatedRegion.regions.length) allData[slug] = generatedRegion;
       });
     })
     .then(() => {
       console.log("[SYNC] Fetching all coronatracker data.");
       coronatrackerScraper.fetchData().then(coronatrackerData => {
         Object.keys(allData).map(region => {
-          if (["Global", "USA"].includes(region)) return;
+          //if (["Global", "USA"].includes(region)) return;
           let coronatrackerRegions = utilities.pullCountriesFromRegion(coronatrackerData, allData[region].regions);
           allData[region].regions,
             (coronatrackerData = utilities.syncTwoRegions(
@@ -55,42 +56,6 @@ exports.fetchAllData = async () => {
         });
         console.log("[SYNC] Fetching all novelcovid data.");
         syncWithAllCountryList(allData).then(allSyncedData => {
-
-
-          // Save USA data to in the Global Region
-          allSyncedData["Global"].regions.map((region, index) => {
-            if (region.country === "United States") {
-              allSyncedData[
-                "USA"
-              ].regionTotal.recoveryRate = utilities.calculatePercentage(
-                allSyncedData["USA"].regionTotal.recovered,
-                allSyncedData["USA"].regionTotal.cases,
-                true,
-                false
-              );
-              allSyncedData[
-                "USA"
-              ].regionTotal.todayDeathRate = utilities.calculatePercentage(
-                allSyncedData["USA"].regionTotal.todayDeaths,
-                allSyncedData["USA"].regionTotal.deaths,
-                false,
-                true
-              );
-              allSyncedData[
-                "USA"
-              ].regionTotal.todayCaseRate = utilities.calculatePercentage(
-                allSyncedData["USA"].regionTotal.todayCases,
-                allSyncedData["USA"].regionTotal.cases,
-                false,
-                true
-              );
-
-              allSyncedData["Global"].regions[index] =
-                allSyncedData["USA"].regionTotal;
-              allSyncedData["Global"].regions[index].country = "United States";
-              allSyncedData["Global"].regions[index].countryCode = "US";
-            }
-          });
 
           Object.keys(allSyncedData).map(region => {
             allSyncedData[region].slug = utilities.slugify(region)
@@ -124,27 +89,35 @@ const calculatePercentages = regions => {
 //TODO: Check if other regions/continents have this issue.
 const syncWithAllCountryList = allData => {
   return novelcovid.fetchData().then(novelData => {
+    allData["global"].regions,
+      (novelData = utilities.syncTwoRegions(
+        allData["global"].regions,
+        novelData,
+        "global",
+        [{ region: "global", skip: "Georgia" }]
+      ));
+
     Object.keys(allData).map(region => {
+      if(region === "global") return
       allData[region].regions,
         (novelData = utilities.syncTwoRegions(
           allData[region].regions,
           novelData,
           region,
-          [{ region: "Global", skip: "Georgia" }]
+          [{ region: "global", skip: "Georgia" }]
         ));
 
       allData[region].regions = calculatePercentages(allData[region].regions);
 
-      const tempUSATotal = allData["USA"].regionTotal.cases;
-      const tempGlobalTotal = allData["Global"].regionTotal.cases;
+      const tempGlobalTotal = allData["global"].regionTotal.cases;
 
       allData[region].regionTotal = utilities.calculateRegionTotal(
         allData[region].regions
       );
 
-      allData["USA"].regionTotal.cases = tempUSATotal;
-      allData["Global"].regionTotal.cases = tempGlobalTotal;
+      allData["global"].regionTotal.cases = tempGlobalTotal;
     });
+
     return allData;
   });
 };

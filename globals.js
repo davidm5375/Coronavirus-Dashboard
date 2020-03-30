@@ -1,16 +1,6 @@
+// NOTE: Changing the order of these will change
+// the display order on the site.
 exports.allRegions = [
-  {
-    name: "Asia",
-    sheetName: "Asia",
-    slug: 'asia',
-    scraper: "coronatracker"
-  },
-  {
-    name: "Africa",
-    sheetName: "Africa",
-    slug: 'africa',
-    scraper: "coronatracker"
-  },
   {
     name: "World",
     sheetName: "Global",
@@ -25,6 +15,32 @@ exports.allRegions = [
     slug: "usa",
     startKey: "UNITED STATES",
     totalKey: "U.S. TOTAL",
+    scraper: "bno"
+  },
+  {
+    name: "Europe",
+    sheetName: "Europe",
+    slug: "europe",
+    scraper: "coronatracker"
+  },
+  {
+    name: "Asia",
+    sheetName: "Asia",
+    slug: 'asia',
+    scraper: "coronatracker"
+  },
+  {
+    name: "Africa",
+    sheetName: "Africa",
+    slug: 'africa',
+    scraper: "coronatracker"
+  },
+  {
+    name: "Latin America",
+    sheetName: "LatinAmerica",
+    slug: "latinamerica",
+    startKey: "Mundo Hispano",
+    totalKey: "TOTAL",
     scraper: "bno"
   },
   {
@@ -52,17 +68,8 @@ exports.allRegions = [
     scraper: "bno"
   },
   {
-    name: "Latin America",
-    sheetName: "LatinAmerica",
-    slug: "latinamerica",
-    startKey: "Mundo Hispano",
-    totalKey: "TOTAL",
-    scraper: "bno"
-  },
-  {
-    name: "Europe",
-    sheetName: "Europe",
-    slug: "europe",
+    name: "Oceania",
+    slug: "oceania",
     scraper: "coronatracker"
   },
   {
@@ -73,11 +80,6 @@ exports.allRegions = [
   {
     name: "North America",
     slug: "north-america",
-    scraper: "coronatracker"
-  },
-  {
-    name: "Oceania",
-    slug: "oceania",
     scraper: "coronatracker"
   }
 ];

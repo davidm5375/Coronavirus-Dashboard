@@ -14,7 +14,7 @@ const getContent = (res, view) => {
       data: {
         ...data,
         lastUpdated: 'a few seconds ago',
-        displayOrder: globals.displayOrder
+        allRegions: globals.allRegions
     }
     });
   }).catch(error => {
