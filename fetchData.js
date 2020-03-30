@@ -88,6 +88,7 @@ exports.fetchAllData = async () => {
               allSyncedData["Global"].regions[index] =
                 allSyncedData["USA"].regionTotal;
               allSyncedData["Global"].regions[index].country = "United States";
+              allSyncedData["Global"].regions[index].countryCode = "US";
             }
           });
 
