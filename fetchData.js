@@ -6,6 +6,8 @@ const novelcovid = require("./micro-scrapers/novelcovid");
 const coronatrackerScraper = require("./micro-scrapers/coronatracker");
 const fs = require("fs");
 
+const allContinentLists = utilities.getAllContinentLists();
+
 exports.fetchAllData = async () => {
   const allData = {};
   const bnoRegions = globals.allRegions
@@ -14,6 +16,8 @@ exports.fetchAllData = async () => {
     })
     .map(region => bnoScraper.fetchData(region));
 
+  console.log("[SYNC] Fetching all BNO data.");
+
   Promise.all(bnoRegions)
     .then(data => {
       // Gather BNO data as base.
@@ -21,76 +25,45 @@ exports.fetchAllData = async () => {
         if (resolvedRegion === {})
           return Promise.reject("Couldn't fetch data for a region.");
         allData[resolvedRegion.regionName] = resolvedRegion;
-
-
       });
 
       if (Object.keys(allData).indexOf("undefined") >= 0) {
         return Promise.reject("Couldn't fetch data.");
       }
 
-      console.log("[SYNC] Fetching all BNO data.");
-
-      allData["LatinAmerica"].regions,
-        (allData["Global"].regions = utilities.syncTwoRegions(
-          allData["LatinAmerica"].regions,
-          allData["Global"].regions
-        ));
-
-      allData["Africa"] = {...globals.regionStructure};
-      allData["Africa"].regionName = "Africa"
-      allData["Africa"].regions = utilities.pullCountriesFromRegion(allData["Global"].regions, globals.countryLists["Africa"]);
-
-      allData["Europe"] = {...globals.regionStructure};
-      allData["Europe"].regionName = "Europe"
-      allData["Europe"].regions = utilities.pullCountriesFromRegion(allData["Global"].regions, globals.countryLists["Europe"]);
-
+      Object.keys(allContinentLists).map(region => {
+        const slug = utilities.slugify(region)
+        if (["global", "usa"].includes(slug)) return;
+        const generatedRegion = utilities.generateRegionFromList(
+          slug,
+          allData["global"].regions,
+          allContinentLists[region]
+        );
+        if (generatedRegion.regions.length) allData[slug] = generatedRegion;
+      });
     })
     .then(() => {
-      // Sync coronatracker data and BNO data.
-      coronatrackerScraper
-        .fetchData()
-        .then(coronatrackerData => {
-          let europeanRegions = utilities.pullCountriesFromRegion(coronatrackerData, globals.countryLists["Europe"]);
-          let africaRegions = utilities.pullCountriesFromRegion(coronatrackerData, globals.countryLists["Africa"]);
-
-          allData["Europe"].regions ,
-            (europeanRegions = utilities.syncTwoRegions(
-              europeanRegions,
-              allData["Europe"].regions
+      console.log("[SYNC] Fetching all coronatracker data.");
+      coronatrackerScraper.fetchData().then(coronatrackerData => {
+        Object.keys(allData).map(region => {
+          //if (["Global", "USA"].includes(region)) return;
+          let coronatrackerRegions = utilities.pullCountriesFromRegion(coronatrackerData, allData[region].regions);
+          allData[region].regions,
+            (coronatrackerData = utilities.syncTwoRegions(
+              coronatrackerData,
+              allData[region].regions
             ));
+        });
+        console.log("[SYNC] Fetching all novelcovid data.");
+        syncWithAllCountryList(allData).then(allSyncedData => {
 
-          allData["Africa"].regions,
-            (africaRegions = utilities.syncTwoRegions(
-              africaRegions,
-              allData["Africa"].regions
-            ));
-
-            syncWithAllCountryList(allData).then(allSyncedData => {
-              allSyncedData["Global"].regions.map((region, index) => {
-                if (region.country === "United States") {
-
-                  allSyncedData["USA"].regionTotal.recoveryRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.recovered, allSyncedData["USA"].regionTotal.cases, true, false)
-                  allSyncedData["USA"].regionTotal.todayDeathRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.todayDeaths, allSyncedData["USA"].regionTotal.deaths, false, true)
-                  allSyncedData["USA"].regionTotal.todayCaseRate = utilities.calculatePercentage(allSyncedData["USA"].regionTotal.todayCases, allSyncedData["USA"].regionTotal.cases, false, true)
-
-                  allSyncedData["Global"].regions[index] = allSyncedData["USA"].regionTotal;
-                  allSyncedData["Global"].regions[index].country = "United States";
-                  allSyncedData["Global"].regions[index].countryCode = "US";
-                }
-              });
-
-              // TODO: Sync other Regions with Global data.
-
-              Object.keys(allSyncedData).map(region => {
-                console.log(`[SYNC] Successful: ${region} - Saved.`);
-                utilities.writeJSONFile(region, allSyncedData[region]);
-              });
-            });
-
-        })
-    }).catch(error=> {
-      console.error(error);
+          Object.keys(allSyncedData).map(region => {
+            allSyncedData[region].slug = utilities.slugify(region)
+            console.log(`[SYNC] Successful: ${region} - Saved.`);
+            utilities.writeJSONFile(allSyncedData[region].slug, allSyncedData[region]);
+          });
+        });
+      });
     });
 };
 
@@ -112,29 +85,117 @@ const calculatePercentages = regions => {
   return regions;
 };
 
+//TODO: Sync USA total with North America and Global
+//TODO: Check if other regions/continents have this issue.
 const syncWithAllCountryList = allData => {
   return novelcovid.fetchData().then(novelData => {
+    allData["global"].regions,
+      (novelData = utilities.syncTwoRegions(
+        allData["global"].regions,
+        novelData,
+        "global",
+        [{ region: "global", skip: "Georgia" }]
+      ));
+
     Object.keys(allData).map(region => {
+      if(region === "global") return
       allData[region].regions,
         (novelData = utilities.syncTwoRegions(
           allData[region].regions,
           novelData,
           region,
-          [{region: "Global", skip: "Georgia"}]
+          [{ region: "global", skip: "Georgia" }]
         ));
 
       allData[region].regions = calculatePercentages(allData[region].regions);
 
-      const tempUSATotal = allData["USA"].regionTotal.cases
-      const tempGlobalTotal = allData["Global"].regionTotal.cases
-
       allData[region].regionTotal = utilities.calculateRegionTotal(
         allData[region].regions
       );
-
-      allData["USA"].regionTotal.cases = tempUSATotal
-      allData["Global"].regionTotal.cases = tempGlobalTotal
     });
+
+    // START SYNC all
+    // TODO: This might be the worst code I've ever written. Will refactor.
+
+    // Sync USA
+    let usaIndexes = {
+      global: 12,
+      "north-america": 12
+    }
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "United States") usaIndexes.global = index;
+    })
+
+    allData["north-america"].regions.forEach((region, index) => {
+      if(region.country === "United States") usaIndexes["north-america"] = index;
+    })
+
+    let usaData = allData["north-america"].regions[usaIndexes["north-america"]]
+
+    allData["global"].regions[usaIndexes.global] = usaData
+    allData["usa"].regionTotal = usaData
+
+    // Sync Canada
+    let canadaIndexes = {
+      global: 12,
+      "north-america": 12
+    }
+
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "Canada") canadaIndexes.global = index;
+    })
+
+    allData["north-america"].regions.forEach((region, index) => {
+      if(region.country === "Canada") canadaIndexes["north-america"] = index;
+    })
+
+    let canadaData = allData["north-america"].regions[canadaIndexes["north-america"]]
+
+    allData["global"].regions[canadaIndexes.global] = canadaData
+    allData["canada"].regionTotal = canadaData
+
+    // Sync Australia
+    let australiaIndexes = {
+      global: 12,
+      "oceania": 12
+    }
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "Australia") australiaIndexes.global = index;
+    })
+
+    allData["oceania"].regions.forEach((region, index) => {
+      if(region.country === "Australia") australiaIndexes["oceania"] = index;
+    })
+
+    let australiaData = allData["oceania"].regions[australiaIndexes["oceania"]]
+
+    allData["global"].regions[australiaIndexes.global] = australiaData
+    allData["australia"].regionTotal = australiaData
+
+    // Sync China
+    let chinaIndexes = {
+      global: 12,
+      "asia": 12
+    }
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "China") chinaIndexes.global = index;
+    })
+
+    allData["asia"].regions.forEach((region, index) => {
+      if(region.country === "China") chinaIndexes["asia"] = index;
+    })
+
+    let chinaData = allData["asia"].regions[chinaIndexes["asia"]]
+
+    allData["global"].regions[chinaIndexes.global] = chinaData
+    allData["china"].regionTotal = chinaData
+
+    // END SYNC
+
+
+    const tempGlobalTotal = allData["global"].regionTotal.cases;
+    allData["global"].regionTotal.cases = tempGlobalTotal;
+
     return allData;
   });
 };

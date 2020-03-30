@@ -8,13 +8,26 @@ const time = require("./getTime");
 const globals = require("./globals");
 const graphData = require("./tmp/statistics_graph.json");
 
-const getContent = (res, view) => {
-  sync.gatherAllRegions().then(data => {
+const getContent = (req, res, view) => {
+  let requestedRegions = globals.allRegions;
+  if(req.params && req.params.region){
+    requestedRegion = requestedRegions.filter(region => {
+      return req.params.region.toLowerCase() === region.slug
+    })
+
+    if(requestedRegion.length === 1) {
+      requestedRegions = requestedRegion
+      view = "data-continent"
+    }
+
+  }
+
+  sync.gatherAllRegions(requestedRegions).then(data => {
     res.render(view, {
       data: {
         ...data,
         lastUpdated: 'a few seconds ago',
-        displayOrder: globals.displayOrder
+        allRegions: requestedRegions
     }
     });
   }).catch(error => {
@@ -26,9 +39,9 @@ const app = express();
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 
-app.get("/", (req, res) => getContent(res, "data"));
+app.get("/", (req, res) => getContent(req, res, "data"));
 app.get("/about", (req, res) => res.render("about"));
-app.get("/data", (req, res) => getContent(res, "data"));
+app.get("/data/:region?", (req, res) => getContent(req, res, "data"));
 app.get("/faq", (req, res) => res.render("faq"));
 app.get("/map", (req, res) => res.render("map"));
 app.get("/preparation", (req, res) => res.render("prepping"));

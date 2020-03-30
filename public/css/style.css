@@ -6,6 +6,32 @@
   --paleGray: #DFDFEF;
 }
 
+.header-link {
+  color: var(--paleGray);
+}
+
+.header-link:hover {
+  color: var(--paleGray);
+  text-decoration: underline;
+}
+
+.sidebar-item {
+  width: 100%;
+  display: inline-block;
+  color: var(--paleGray);
+  padding: 5px 10px;
+}
+
+.sidebar-item:hover {
+  color: var(--paleGray);
+  font-weight: bolder;
+  text-decoration: underline;
+}
+
+.sidebar-item:nth-child(even) {
+  background: #5d6c9e;
+}
+
 .sorted-table__header {
   padding: 10px;
   position: relative;

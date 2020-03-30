@@ -1,12 +1,10 @@
+// NOTE: Changing the order of these will change
+// the display order on the site.
 exports.allRegions = [
-  {
-    name: "Africa",
-    sheetName: "Africa",
-    scraper: "coronatracker"
-  },
   {
     name: "World",
     sheetName: "Global",
+    slug: 'global',
     startKey: "WORLD",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -14,13 +12,41 @@ exports.allRegions = [
   {
     name: "USA",
     sheetName: "USA",
+    slug: "usa",
     startKey: "UNITED STATES",
     totalKey: "U.S. TOTAL",
     scraper: "bno"
   },
   {
+    name: "Europe",
+    sheetName: "Europe",
+    slug: "europe",
+    scraper: "coronatracker"
+  },
+  {
+    name: "Asia",
+    sheetName: "Asia",
+    slug: 'asia',
+    scraper: "coronatracker"
+  },
+  {
+    name: "Africa",
+    sheetName: "Africa",
+    slug: 'africa',
+    scraper: "coronatracker"
+  },
+  {
+    name: "Latin America",
+    sheetName: "LatinAmerica",
+    slug: "latinamerica",
+    startKey: "Mundo Hispano",
+    totalKey: "TOTAL",
+    scraper: "bno"
+  },
+  {
     name: "China",
     sheetName: "China",
+    slug: "china",
     startKey: "MAINLAND CHINA",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -28,6 +54,7 @@ exports.allRegions = [
   {
     name: "Canada",
     sheetName: "Canada",
+    slug: "canada",
     startKey: "CANADA",
     totalKey: "TOTAL",
     scraper: "bno"
@@ -35,33 +62,26 @@ exports.allRegions = [
   {
     name: "Australia",
     sheetName: "Australia",
+    slug: "australia",
     startKey: "AUSTRALIA",
     totalKey: "TOTAL",
     scraper: "bno"
   },
   {
-    name: "Latin America",
-    sheetName: "LatinAmerica",
-    startKey: "Mundo Hispano",
-    totalKey: "TOTAL",
-    scraper: "bno"
+    name: "Oceania",
+    slug: "oceania",
+    scraper: "coronatracker"
   },
   {
-    name: "Europe",
-    sheetName: "Europe",
+    name: "South America",
+    slug: "south-america",
+    scraper: "coronatracker"
+  },
+  {
+    name: "North America",
+    slug: "north-america",
     scraper: "coronatracker"
   }
-];
-
-exports.displayOrder = [
-  "Global",
-  "USA",
-  "Europe",
-  "Africa",
-  "LatinAmerica",
-  "China",
-  "Canada",
-  "Australia"
 ];
 
 exports.countryLists = {
@@ -179,7 +199,7 @@ exports.AlternativeLabelNames = {
   "Palestinian Territory, Occupied": "Palestine",
   "Coast D'Ivoire": "Ivory Coast",
   "Congo, the Democratic Republic of the": "DR Congo",
-  "Cyrpus": "Northern Cyprus",
+  "Northern Cyrpus": "Cyprus",
   "Macao": "Macau",
   "Tanzania": "Tanzania, United Republic of",
   "Syrian Arab Republic": "Syria",

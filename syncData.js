@@ -2,19 +2,21 @@ const globals = require("./globals");
 const fs = require("fs");
 const utilities = require("./utilities");
 
-exports.gatherAllRegions = () => {
+exports.gatherAllRegions = (requestedRegions) => {
   return Promise.all(
-    globals.allRegions.map(region =>
-      fs.promises.readFile(utilities.getJSONPath(region.sheetName))
+    requestedRegions.map(region =>
+      fs.promises.readFile(utilities.getJSONPath(region.slug))
     )
   ).then(values => {
     let data = {};
+    let allSlugs = [];
 
     values.forEach(region => {
       const regionData = JSON.parse(region);
       const regionName = regionData.regionName;
       data[regionName] = regionData;
-      
+      allSlugs.push(regionData.slug)
+
       data[regionName].recoveryRate = utilities.calculatePercentage(
         data[regionName].regionTotal.recovered,
         data[regionName].regionTotal.cases,
@@ -37,6 +39,9 @@ exports.gatherAllRegions = () => {
 
     return {
       ...data,
+      allSlugs: requestedRegions.map(region => {
+        return region.slug
+      }),
       allRegions: Object.keys(data)
     };
   });

@@ -6,7 +6,7 @@ const utilities = require("../utilities");
 const fs = require("fs");
 
 const keyOrders = {
-  USA: [
+  'usa': [
     "index ",
     "country ",
     "cases ",
@@ -17,7 +17,7 @@ const keyOrders = {
     "serious ",
     "recovered "
   ],
-  Global: [
+  'global': [
     "index ",
     "country ",
     "cases ",
@@ -28,7 +28,7 @@ const keyOrders = {
     "serious ",
     "recovered "
   ],
-  China: [
+  'china': [
     "index ",
     "country ",
     "cases ",
@@ -38,7 +38,7 @@ const keyOrders = {
     "recovered ",
     "mystery "
   ],
-  Canada: [
+  'canada': [
     "index ",
     "country ",
     "cases ",
@@ -49,7 +49,7 @@ const keyOrders = {
     "serious ",
     "recovered "
   ],
-  Australia: [
+  'australia': [
     "index ",
     "country ",
     "cases ",
@@ -60,7 +60,7 @@ const keyOrders = {
     "serious ",
     "recovered "
   ],
-  LatinAmerica: [
+  'latinamerica': [
     "index ",
     "country ",
     "cases ",
@@ -96,7 +96,7 @@ exports.fetchData = region => {
           json,
           region.startKey,
           region.totalKey,
-          region.sheetName
+          region.slug
         );
       })
       .catch(error => {
@@ -121,14 +121,14 @@ const gatherBetweenRows = (startKey, endKey, data) => {
   return data.slice(startKey + 1, endKey);
 };
 
-const hasValidKeys = (region, sheetName) => {
+const hasValidKeys = (region, slug) => {
   const receivedKeys = Object.keys(region);
-  return keyOrders[sheetName].every((key, index) => {
-    return receivedKeys[index] === keyOrders[sheetName][index];
+  return keyOrders[slug].every((key, index) => {
+    return receivedKeys[index] === keyOrders[slug][index];
   });
 };
 
-const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
+const generatedRegionalData = (data, startKey, totalKey, slug) => {
   const sanitiziedData = removeEmptyRows(data);
   const rowOrder = [startKey, totalKey];
   const rowIndexes = gatherCategoryIndexes(rowOrder, sanitiziedData);
@@ -138,8 +138,8 @@ const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
       return element["country "] === totalKey;
     })
   };
-  if (!hasValidKeys(sortedData.regions[0], sheetName)) return false;
-  sortedData.regionName = sheetName;
+  if (!hasValidKeys(sortedData.regions[0], slug)) return false;
+  sortedData.regionName = slug;
   sortedData.lastUpdated = time.setUpdatedTime();
   sortedData.regionTotal = utilities.remapKeys(
     sortedData.regionTotal,
@@ -153,14 +153,14 @@ const generatedRegionalData = (data, startKey, totalKey, sheetName) => {
     region.serious = region.serious === "N/A" ? "0" : region.serious;
   });
 
-  if (sheetName === "Global") {
-    sortedData = extractCountryFromRegion("Queue", "Global", sortedData);
+  if (slug === "global") {
+    sortedData = extractCountryFromRegion("Queue", sortedData);
   }
 
   return sortedData;
 };
 
-const extractCountryFromRegion = (country, region, data) => {
+const extractCountryFromRegion = (country, data) => {
   const targetCountryIndex = data.regions
     .map(region => {
       return region.country;
