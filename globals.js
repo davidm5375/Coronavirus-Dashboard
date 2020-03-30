@@ -84,21 +84,6 @@ exports.allRegions = [
   }
 ];
 
-exports.displayOrder = [
-  "Global",
-  "USA",
-  "Europe",
-  "Asia",
-  "Africa",
-  "LatinAmerica",
-  "China",
-  "Canada",
-  "Australia",
-  "Oceania",
-  "North America",
-  "South America"
-];
-
 exports.countryLists = {
   Europe: [
     "Albania",
@@ -214,7 +199,7 @@ exports.AlternativeLabelNames = {
   "Palestinian Territory, Occupied": "Palestine",
   "Coast D'Ivoire": "Ivory Coast",
   "Congo, the Democratic Republic of the": "DR Congo",
-  "Cyrpus": "Northern Cyprus",
+  "Northern Cyrpus": "Cyprus",
   "Macao": "Macau",
   "Tanzania": "Tanzania, United Republic of",
   "Syrian Arab Republic": "Syria",

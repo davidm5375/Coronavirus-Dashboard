@@ -109,14 +109,92 @@ const syncWithAllCountryList = allData => {
 
       allData[region].regions = calculatePercentages(allData[region].regions);
 
-      const tempGlobalTotal = allData["global"].regionTotal.cases;
-
       allData[region].regionTotal = utilities.calculateRegionTotal(
         allData[region].regions
       );
-
-      allData["global"].regionTotal.cases = tempGlobalTotal;
     });
+
+    // START SYNC all
+    // TODO: This might be the worst code I've ever written. Will refactor.
+
+    // Sync USA
+    let usaIndexes = {
+      global: 12,
+      "north-america": 12
+    }
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "United States") usaIndexes.global = index;
+    })
+
+    allData["north-america"].regions.forEach((region, index) => {
+      if(region.country === "United States") usaIndexes["north-america"] = index;
+    })
+
+    let usaData = allData["north-america"].regions[usaIndexes["north-america"]]
+
+    allData["global"].regions[usaIndexes.global] = usaData
+    allData["usa"].regionTotal = usaData
+
+    // Sync Canada
+    let canadaIndexes = {
+      global: 12,
+      "north-america": 12
+    }
+
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "Canada") canadaIndexes.global = index;
+    })
+
+    allData["north-america"].regions.forEach((region, index) => {
+      if(region.country === "Canada") canadaIndexes["north-america"] = index;
+    })
+
+    let canadaData = allData["north-america"].regions[canadaIndexes["north-america"]]
+
+    allData["global"].regions[canadaIndexes.global] = canadaData
+    allData["canada"].regionTotal = canadaData
+
+    // Sync Australia
+    let australiaIndexes = {
+      global: 12,
+      "oceania": 12
+    }
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "Australia") australiaIndexes.global = index;
+    })
+
+    allData["oceania"].regions.forEach((region, index) => {
+      if(region.country === "Australia") australiaIndexes["oceania"] = index;
+    })
+
+    let australiaData = allData["oceania"].regions[australiaIndexes["oceania"]]
+
+    allData["global"].regions[australiaIndexes.global] = australiaData
+    allData["australia"].regionTotal = australiaData
+
+    // Sync China
+    let chinaIndexes = {
+      global: 12,
+      "asia": 12
+    }
+    allData["global"].regions.forEach((region, index) => {
+      if(region.country === "China") chinaIndexes.global = index;
+    })
+
+    allData["asia"].regions.forEach((region, index) => {
+      if(region.country === "China") chinaIndexes["asia"] = index;
+    })
+
+    let chinaData = allData["asia"].regions[chinaIndexes["asia"]]
+
+    allData["global"].regions[chinaIndexes.global] = chinaData
+    allData["china"].regionTotal = chinaData
+
+    // END SYNC
+
+
+    const tempGlobalTotal = allData["global"].regionTotal.cases;
+    allData["global"].regionTotal.cases = tempGlobalTotal;
 
     return allData;
   });

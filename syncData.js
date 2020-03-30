@@ -2,9 +2,9 @@ const globals = require("./globals");
 const fs = require("fs");
 const utilities = require("./utilities");
 
-exports.gatherAllRegions = () => {
+exports.gatherAllRegions = (requestedRegions) => {
   return Promise.all(
-    globals.allRegions.map(region =>
+    requestedRegions.map(region =>
       fs.promises.readFile(utilities.getJSONPath(region.slug))
     )
   ).then(values => {
@@ -39,7 +39,9 @@ exports.gatherAllRegions = () => {
 
     return {
       ...data,
-      allSlugs: allSlugs,
+      allSlugs: requestedRegions.map(region => {
+        return region.slug
+      }),
       allRegions: Object.keys(data)
     };
   });
