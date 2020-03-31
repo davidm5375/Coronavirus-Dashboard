@@ -222,7 +222,7 @@ table.dataTable.display tbody tr:first-of-type {
   font-weight: bolder;
   color: var(--paleGray);
   background: #445175;
-  padding: 15px 20px;
+padding: 5px 20px;
 }
 
 .dropdown-item:nth-child(even) {
