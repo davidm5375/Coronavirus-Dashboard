@@ -6,6 +6,12 @@
   --paleGray: #DFDFEF;
 }
 
+
+.navbar-collapse.collapse.show {
+  z-index: 9999;
+  background: #191919;
+}
+
 .header-link {
   color: var(--paleGray);
 }
