@@ -10,29 +10,36 @@ const graphData = require("./tmp/statistics_graph.json");
 
 const getContent = (req, res, view) => {
   let requestedRegions = globals.allRegions;
-  if(req.params && req.params.region){
+  if (req.params && req.params.region) {
     requestedRegion = requestedRegions.filter(region => {
-      return req.params.region.toLowerCase() === region.slug
-    })
+      return req.params.region.toLowerCase() === region.slug;
+    });
 
-    if(requestedRegion.length === 1) {
-      requestedRegions = requestedRegion
-      view = "data-continent"
+    if (requestedRegion.length === 1) {
+      requestedRegions = requestedRegion;
+      view = "data-continent";
     }
 
+    if (requestedRegion.length === 0) {
+      res.redirect("/data");
+      return;
+    }
   }
 
-  sync.gatherAllRegions(requestedRegions).then(data => {
-    res.render(view, {
-      data: {
-        ...data,
-        lastUpdated: 'a few seconds ago',
-        allRegions: requestedRegions
-    }
+  sync
+    .gatherAllRegions(requestedRegions)
+    .then(data => {
+      res.render(view, {
+        data: {
+          ...data,
+          lastUpdated: "a few seconds ago",
+          allRegions: requestedRegions
+        }
+      });
+    })
+    .catch(error => {
+      console.error(error);
     });
-  }).catch(error => {
-    console.error(error)
-  })
 };
 
 const app = express();
