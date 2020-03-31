@@ -81,6 +81,11 @@ exports.allRegions = [
     name: "North America",
     slug: "north-america",
     scraper: "coronatracker"
+  },
+  {
+    name: "Middle East",
+    slug: "middle-east",
+    scraper: "coronatracker"
   }
 ];
 

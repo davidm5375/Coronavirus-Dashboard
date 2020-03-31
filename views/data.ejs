@@ -179,6 +179,7 @@
           <a class="sidebar-item" href="/data/oceania">Oceania</a>
           <a class="sidebar-item" href="/data/south-america">South America</a>
           <a class="sidebar-item" href="/data/north-america">North America</a>
+          <a class="sidebar-item" href="/data/middle-east">Middle East</a>
         </div>
       </div>
 
@@ -351,12 +352,6 @@
           <div class="w-100"></div>
           <% } %>
           <% }) %>
-
-          <% if ( data.allRegions.length % 2 !== 0) { %>
-          <div class="col row-wrapper">
-            &nbsp;
-          </div>
-          <% } %>
 
           <% data.allRegions.forEach(function(region, index){ %>
           <div id="container_mobile_<%= region.slug %>" class="container--wrap col hide-desktop">
@@ -835,7 +830,9 @@
         // Toggle the Legend and Totals in Dropdown Nav depending on
         // which Region is currently in the viewport.
         // TODO: Change slugs into order of render to make this work
-        if (scrollPosition > topPoistion(allRegions[12])) {
+        if (scrollPosition > topPoistion(allRegions[13])) {
+          showRegionTotal(allRegions[13])
+        } else if (scrollPosition > topPoistion(allRegions[12])) {
           showRegionTotal(allRegions[12])
         } else if (scrollPosition > topPoistion(allRegions[11])) {
           showRegionTotal(allRegions[11])
